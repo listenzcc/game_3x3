@@ -9,7 +9,10 @@ def pnt_board(state, shape=shape):
     for j, s in enumerate(state):
         if j % 3 == 0:
             print('\n', end='|')
-        print(shape[s], end='|')
+        if s == 0:
+            print(j, end='|')
+        else:
+            print(shape[s], end='|')
     print('')
     print('-' * 10)
 
