@@ -39,18 +39,37 @@ continues = [[0, 1, 2], [3, 4, 5], [6, 7, 8],  # lines
              [0, 4, 8], [2, 4, 6]]  # cross
 
 
-def check_if_win(state, continues=continues):
+def check_if_threelink(state, who, continues=continues):
     # return True if there are three nodes linked
-    return any(abs(sum(state[_] for _ in c)) == 3 for c in continues)
+    return any((sum(state[_] for _ in c)) == 3*who for c in continues)
 
 
-state = [1, 1, 0,
-         0, 1, 0,
+def check_state(state, who):
+    # pnt_board(state)
+
+    if check_if_threelink(state, who):
+        return True
+
+    if check_if_threelink(state, -who):
+        return False
+
+    if possibles(state, -who) == []:
+        return False
+
+    ll = list(any(check_state(p1, who) for p1 in possibles(p0, who))
+              for p0 in possibles(state, -who))
+
+    # print(ll)
+
+    if False in ll:
+        return False
+    return True
+
+
+state = [0, 0, 0,
+         0, 0, 0,
          0, 0, 0]
 
-pnt_board(state)
-
-poss = possibles(state, -1)
-for p in poss:
-    pnt_board(p)
-    print(check_if_win(p))
+for p in possibles(state, 1):
+    if check_state(p, 1):
+        pnt_board(p)
