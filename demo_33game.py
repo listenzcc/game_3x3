@@ -26,11 +26,11 @@ def possibles(state, nxt):
     return possibles_list
 
 
-def set_value(state, idx, nxt):
-    # copy current state and set state[idx] as nxt
+def set_value(state, idx, who):
+    # copy current state and set state[idx] as who
     # return the copy
     newstate = state.copy()
-    newstate[idx] = nxt
+    newstate[idx] = who
     return newstate
 
 
@@ -44,13 +44,16 @@ def check_if_threelink(state, who, continues=continues):
     return any((sum(state[_] for _ in c)) == 3*who for c in continues)
 
 
+result_dict = dict()
+
+
 def check_state(state, who):
     # pnt_board(state)
 
     if check_if_threelink(state, who):
         return True
 
-    if check_if_threelink(state, -who):
+    if any(check_if_threelink(p, -who) for p in possibles(state, -who)):
         return False
 
     if possibles(state, -who) == []:
@@ -58,9 +61,8 @@ def check_state(state, who):
 
     ll = list(any(check_state(p1, who) for p1 in possibles(p0, who))
               for p0 in possibles(state, -who))
-
+    result_dict[str(state)] = ll
     # print(ll)
-
     if False in ll:
         return False
     return True
@@ -71,5 +73,32 @@ state = [0, 0, 0,
          0, 0, 0]
 
 for p in possibles(state, 1):
-    if check_state(p, 1):
-        pnt_board(p)
+    check_state(p, 1)
+
+for p in possibles(state, 1):
+    res = result_dict[str(p)]
+    print(p, res, sum(res))
+
+
+class Game_3x3:
+    def __init__(self):
+        self.shape = {0: ' ', 1: 'x', -1: 'o'}
+        self.refresh()
+
+    def refresh(self):
+        self.state = list(0 for _ in range(9))
+        self.who = 1
+
+    def go(self):
+        self.refresh()
+        while True:
+            pnt_board(self.state)
+            idx = -1
+            while idx not in range(9):
+                idx = int(input(self.shape[self.who]+': '))
+            self.state[idx] = self.who
+            self.who *= -1
+
+
+g3 = Game_3x3()
+g3.go()
